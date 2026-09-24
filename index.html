@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Underwater</title>
+<meta name="description" content="A short game about debt, chance, and what you are willing to know about yourself.">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<a class="skip" href="#stage">Skip to the game</a>
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <h1 class="site-header__brand">Underwater</h1>
+    <div class="site-header__tools">
+      <button type="button" id="restart" class="link-button">New run</button>
+      <button type="button" id="theme-toggle" class="icon-button" aria-label="Switch between light and dark">◑</button>
+    </div>
+  </div>
+</header>
+
+<div class="ledger-bar" id="ledger-bar" hidden>
+  <div class="ledger" id="ledger" aria-live="polite"></div>
+</div>
+
+<main id="stage" class="stage" tabindex="-1">
+  <noscript>
+    <article class="card">
+      <h2 class="card__title">This one needs JavaScript</h2>
+      <p class="prose">Underwater is a small game rather than a page — all 30 months of it run in the browser, with nothing on a server. Turn JavaScript on for this file and it will start.</p>
+    </article>
+  </noscript>
+</main>
+
+<footer class="site-footer">
+  <p>Every roll in this game is seeded and every bet returns 85 cents per euro staked, on average. Both numbers are printed at the end of your run.</p>
+</footer>
+
+<!-- The opening image.
+
+     Authored here rather than as a .svg file loaded through <img> for one
+     reason: an <img> document cannot see this page's custom properties, so it
+     could not follow the light/dark theme. Inline, every colour below is a
+     token and the picture rethemes with everything else.
+
+     It is also why the figures are <text> and not paths — they stay real,
+     selectable, searchable text, and the whole premise is still readable to a
+     screen reader through the label applied in ui.js.
+
+     The composition is the argument: the waterline splits it, the van and the
+     man waiting for you sit above, and what you owe is underneath, larger than
+     both and getting no smaller. -->
+<template id="intro-art">
+  <svg class="art" viewBox="0 0 760 560" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <linearGradient id="art-sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--art-sky-top)"/>
+        <stop offset="100%" stop-color="var(--art-sky-bottom)"/>
+      </linearGradient>
+      <linearGradient id="art-deep" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="var(--art-water-top)"/>
+        <stop offset="100%" stop-color="var(--art-water-bottom)"/>
+      </linearGradient>
+      <linearGradient id="art-beam" x1="1" y1="0" x2="0" y2="0">
+        <stop offset="0%" stop-color="var(--art-beam)" stop-opacity="0.42"/>
+        <stop offset="100%" stop-color="var(--art-beam)" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+
+    <rect x="0" y="0" width="760" height="300" fill="url(#art-sky)"/>
+    <rect x="0" y="300" width="760" height="260" fill="url(#art-deep)"/>
+
+    <g fill="var(--art-line)" opacity="0.32">
+      <circle cx="118" cy="62" r="1.1"/>
+      <circle cx="642" cy="48" r="1.3"/>
+      <circle cx="704" cy="112" r="0.9"/>
+      <circle cx="86" cy="148" r="1"/>
+      <circle cx="548" cy="96" r="1.1"/>
+      <circle cx="268" cy="74" r="0.8"/>
+    </g>
+
+    <!-- The picture carries the title only. "30 months. That is how long you
+         have given yourself." used to sit here, and it is now the last line of
+         the prose directly underneath — printing it in both places two inches
+         apart reads as a mistake rather than as emphasis. -->
+    <text class="art__title" x="380" y="96">Underwater</text>
+
+    <!-- The port, far off and not your problem. -->
+    <g fill="var(--art-far)" opacity="0.72">
+      <path d="M280 300 L280 268 L330 268 L330 256 L392 256 L392 272 L452 272 L452 262 L520 262 L520 300 Z"/>
+    </g>
+    <g stroke="var(--art-far)" stroke-width="2.5" fill="none" opacity="0.72">
+      <path d="M470 262 L470 196 M444 201 L518 201 M470 196 L444 201 M470 196 L518 201"/>
+      <path d="M350 256 L350 212 M331 216 L377 216"/>
+    </g>
+
+    <!-- Nesso, parked, engine running. -->
+    <g>
+      <path d="M516 300 C518 285 525 275 537 269 C553 261 573 255 599 253 C625 251 649 255 665 261 C681 267 690 280 694 300 Z"
+            fill="var(--art-object)"/>
+      <circle cx="556" cy="297" r="11" fill="var(--art-object)"/>
+      <circle cx="658" cy="297" r="11" fill="var(--art-object)"/>
+      <path d="M518 276 L320 252 L320 300 L518 292 Z" fill="url(#art-beam)"/>
+      <circle cx="520" cy="283" r="3.2" fill="var(--art-beam)" opacity="0.75"/>
+    </g>
+
+    <!-- The van, under its tarpaulin, not going anywhere. -->
+    <g>
+      <path d="M62 300 C64 268 74 251 96 243 C112 237 120 227 138 221 C158 214 186 213 208 215 C240 218 268 225 288 239 C302 249 308 272 310 300 Z"
+            fill="var(--art-object)"/>
+      <g stroke="var(--art-fold)" stroke-width="1.2" fill="none" opacity="0.5">
+        <path d="M96 243 C122 261 152 269 190 267"/>
+        <path d="M208 215 C215 249 213 277 211 300"/>
+        <path d="M66 288 L306 283"/>
+        <path d="M112 285 L110 300 M176 284 L175 300 M244 283 L246 300"/>
+      </g>
+      <text class="art__vinyl" x="150" y="258" transform="rotate(-3 150 258)">TRANSPORTES</text>
+      <!-- His headlights are the only thing lighting your van. -->
+      <path d="M288 239 C302 249 308 272 310 300" stroke="var(--art-beam)" stroke-width="1.6"
+            fill="none" opacity="0.28" stroke-linecap="round"/>
+      <path d="M208 215 C240 218 268 225 288 239" stroke="var(--art-beam)" stroke-width="1.1"
+            fill="none" opacity="0.13" stroke-linecap="round"/>
+    </g>
+
+    <!-- The waterline, and what is under it. -->
+    <path d="M0 300 L760 300" stroke="var(--art-line)" stroke-width="1" opacity="0.55"/>
+    <g stroke="var(--art-line)" stroke-width="1" opacity="0.13" fill="none">
+      <path d="M40 316 L250 316 M300 316 L520 316"/>
+      <path d="M120 332 L430 332 M480 332 L700 332"/>
+      <path d="M60 350 L300 350 M360 350 L640 350"/>
+    </g>
+
+    <text class="art__figure" x="380" y="440">€14,000</text>
+    <text class="art__sub" x="380" y="482">at 4% a month, to a man with a notebook</text>
+  </svg>
+</template>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/lib/rng.js"></script>
+<script src="assets/js/lib/state.js"></script>
+<script src="assets/js/lib/economy.js"></script>
+<script src="assets/js/lib/wager.js"></script>
+<script src="assets/js/lib/scenarios.js"></script>
+<script src="assets/js/lib/endings.js"></script>
+<script src="content/script.js"></script>
+<script src="assets/js/ui.js"></script>
+<script src="assets/js/main.js"></script>
+
+</body>
+</html>

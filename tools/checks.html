@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Underwater — checks</title>
+<link rel="stylesheet" href="../assets/css/main.css">
+<style>
+  /* Local-only tool, so it is allowed the handful of styles the game itself
+     does not need. It still uses the game's colour tokens rather than its own. */
+  .tool { max-width: 56rem; margin: 0 auto; padding: 2rem 1.25rem 4rem; font-family: ui-sans-serif, system-ui, sans-serif; }
+  .tool h2 { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin: 2.5rem 0 0.75rem; }
+  .tool p { font-size: 0.85rem; color: var(--ink-soft); max-width: 44rem; }
+  .row { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; margin: 1rem 0; }
+  .out { font-size: 0.8rem; line-height: 1.75; white-space: pre-wrap; border-top: 1px solid var(--line); padding-top: 0.8rem; margin-top: 0.8rem; font-variant-numeric: tabular-nums; }
+  .ok { color: var(--good); }
+  .fail { color: var(--bad); }
+  .warn { color: var(--ink-soft); }
+  input { background: var(--surface-solid); border: 1px solid var(--line); color: var(--ink); border-radius: var(--radius); padding: 0.5rem 0.7rem; font: inherit; font-size: 0.8rem; width: 7rem; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.78rem; margin-top: 0.5rem; }
+  th, td { text-align: right; padding: 0.35rem 0.6rem; border-bottom: 1px solid var(--line-soft); }
+  th:first-child, td:first-child { text-align: left; }
+  th { color: var(--ink-faint); font-weight: 500; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="tool">
+
+  <p class="card__kicker">Underwater · local tools</p>
+  <h1 class="card__title">Checks</h1>
+  <p>
+    Not part of the shipped game — <code>tools/</code> is local only. This page loads the
+    same <code>assets/js/</code> files the game does, so anything that passes here passes
+    for the same reasons it passes in play.
+  </p>
+
+  <h2>Validate the script</h2>
+  <p>
+    The buildless substitute for a compiler. Every authored effect, gate and flag is
+    checked against the lists in <code>lib/state.js</code>, which is what catches the
+    failure mode this project cannot otherwise see: a mistyped stat name does nothing at
+    all in the game and says nothing about it. Run this after every content edit.
+  </p>
+  <div class="row">
+    <button type="button" class="button" id="validate">Validate</button>
+  </div>
+  <div class="out" id="validate-out"></div>
+
+  <h2>Simulate for balance</h2>
+  <p>
+    Plays the whole script headlessly under fixed strategies. This is how the game's four
+    claims get checked against its own arithmetic rather than against intention — if the
+    always-grind column stops ending badly, the game has stopped meaning what it says.
+  </p>
+  <div class="row">
+    <label for="runs">Runs per strategy</label>
+    <input type="number" id="runs" value="10000" min="100" max="200000" step="100">
+    <button type="button" class="button" id="simulate">Simulate</button>
+  </div>
+  <div class="out" id="simulate-out"></div>
+
+</div>
+
+<script src="../assets/js/config.js"></script>
+<script src="../assets/js/lib/rng.js"></script>
+<script src="../assets/js/lib/state.js"></script>
+<script src="../assets/js/lib/economy.js"></script>
+<script src="../assets/js/lib/wager.js"></script>
+<script src="../assets/js/lib/scenarios.js"></script>
+<script src="../assets/js/lib/endings.js"></script>
+<script src="../content/script.js"></script>
+<script>
+(function (global) {
+  'use strict';
+
+  var problems, notes;
+
+  function fail(where, message) { problems.push(where + ' — ' + message); }
+  function warn(where, message) { notes.push(where + ' — ' + message); }
+
+  function checkEffects(where, effects) {
+    if (!effects) return;
+    Object.keys(effects).forEach(function (key) {
+      if (global.State.NUMERIC_KEYS.indexOf(key) === -1) {
+        fail(where, 'unknown effect key "' + key + '"');
+      } else if (typeof effects[key] !== 'number') {
+        fail(where, 'effect "' + key + '" is not a number');
+      } else if (Math.abs(effects[key]) > 20000) {
+        warn(where, 'effect "' + key + '" is ' + effects[key] + ', which looks like a typo');
+      }
+    });
+  }
+
+  function checkGate(where, gate, label) {
+    if (!gate) return;
+    Object.keys(gate).forEach(function (key) {
+      var isFlag = global.State.FLAG_KEYS.indexOf(key) !== -1;
+      var isStat = global.State.NUMERIC_KEYS.indexOf(key) !== -1;
+      if (!isFlag && !isStat) {
+        fail(where, label + ' names unknown "' + key + '" (a gate that names nothing always fails closed, so this choice can never appear)');
+        return;
+      }
+      if (isStat && typeof gate[key].min !== 'number' && typeof gate[key].max !== 'number') {
+        fail(where, label + ' on "' + key + '" has neither min nor max');
+      }
+    });
+  }
+
+  function validate() {
+    problems = [];
+    notes = [];
+
+    var script = global.SCRIPT;
+    var seenBeats = {};
+    var seenChoices = {};
+    var chapterIds = script.chapters.map(function (c) { return c.id; });
+    var months = {};
+
+    script.beats.forEach(function (beat) {
+      var where = beat.id;
+
+      if (seenBeats[beat.id]) fail(where, 'duplicate beat id');
+      seenBeats[beat.id] = true;
+
+      if (chapterIds.indexOf(beat.chapter) === -1) fail(where, 'unknown chapter "' + beat.chapter + '"');
+      if (typeof beat.month !== 'number') fail(where, 'no month');
+      if (months[beat.month]) fail(where, 'month ' + beat.month + ' is already taken by ' + months[beat.month]);
+      months[beat.month] = beat.id;
+
+      if (!beat.title) fail(where, 'no title');
+      if (!beat.body || !beat.body.length) fail(where, 'no body');
+      if (!beat.choices || beat.choices.length < 2) fail(where, 'needs at least two choices');
+
+      (beat.choices || []).forEach(function (choice) {
+        var cw = beat.id + ' / ' + (choice.id || '(no id)');
+
+        if (!choice.id) fail(cw, 'no choice id');
+        if (seenChoices[choice.id]) fail(cw, 'duplicate choice id');
+        seenChoices[choice.id] = true;
+
+        if (!choice.label) fail(cw, 'no label');
+
+        checkEffects(cw, choice.effects);
+        checkEffects(cw + ' (loss)', choice.effectsLose);
+        checkGate(cw, choice.requires, 'requires');
+        checkGate(cw, choice.hiddenWhen, 'hiddenWhen');
+
+        (choice.flags || []).forEach(function (flag) {
+          if (global.State.FLAG_KEYS.indexOf(flag) === -1) fail(cw, 'unknown flag "' + flag + '"');
+        });
+
+        if (choice.wager) {
+          if (typeof choice.wager.multiplier !== 'number') fail(cw, 'wager has no multiplier');
+          if (choice.wager.stake === 'suggested' && typeof choice.wager.base !== 'number') {
+            fail(cw, 'wager uses a suggested stake but sets no base');
+          }
+          if (!choice.outcomeWin || !choice.outcomeLose) fail(cw, 'a wager needs both outcomeWin and outcomeLose');
+          if (choice.outcome) warn(cw, 'has both a wager and a plain outcome; the plain one is never shown');
+        } else if (!choice.outcome) {
+          fail(cw, 'no outcome');
+        }
+      });
+    });
+
+    /* Every gate in endings.js must have prose, or a player can reach a real
+       ending and be shown nothing. */
+    global.Endings.GATES.forEach(function (gate) {
+      if (!global.Endings.prose(gate.id)) warn('ending "' + gate.id + '"', 'no prose written yet');
+    });
+
+    /* Content coverage. A gap in the middle of the spine is a bug; a gap at the
+       end is just the build not being finished. */
+    var written = 0;
+    var m;
+    for (m = 1; m <= global.GAME.totalMonths; m += 1) {
+      if (months[m]) written = m;
+    }
+    for (m = 1; m <= written; m += 1) {
+      if (!months[m]) fail('month ' + m, 'no beat, but later months are written');
+    }
+    if (written < global.GAME.totalMonths) {
+      warn('coverage', 'months ' + (written + 1) + '–' + global.GAME.totalMonths + ' are not written yet');
+    }
+
+    Object.keys(script.system.collection).forEach(function (severity) {
+      script.system.collection[severity].forEach(function (event) {
+        var where = 'collection/' + severity + '/' + event.id;
+        if (!event.body) fail(where, 'no body');
+        checkEffects(where, event.effects);
+      });
+    });
+
+    render();
+  }
+
+  function render() {
+    var out = document.getElementById('validate-out');
+    out.textContent = '';
+
+    function line(text, cls) {
+      var div = document.createElement('div');
+      if (cls) div.className = cls;
+      div.textContent = text;
+      out.appendChild(div);
+    }
+
+    if (!problems.length) {
+      line('PASS — ' + global.SCRIPT.beats.length + ' beats, no errors.', 'ok');
+    } else {
+      line('FAIL — ' + problems.length + ' error(s):', 'fail');
+      problems.forEach(function (p) { line('  ' + p, 'fail'); });
+    }
+
+    notes.forEach(function (n) { line('  note: ' + n, 'warn'); });
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Simulation                                                        */
+  /* ---------------------------------------------------------------- */
+
+  /* Strategies score the visible choices and take the best. They are blunt on
+     purpose — the question is not "how would a clever player do", it is "what
+     does each of the four behaviours the game is about actually lead to". */
+  var NEVER = -1e6;
+
+  var STRATEGIES = {
+    /* Pays for everything out of pocket, refuses every shortcut, and works.
+       The point of this profile is not that it behaves badly — it is that
+       behaving well does not clear the balance. */
+    'always-grind': function (choice) {
+      if (choice.wager || has(choice, 'greed') || has(choice, 'loan')) return NEVER;
+      return cashOf(choice);
+    },
+    'always-gamble': function (choice) {
+      if (choice.wager) return 1000;
+      return cashOf(choice);
+    },
+    'always-greedy': function (choice) {
+      if (has(choice, 'greed')) return 1000;
+      return cashOf(choice);
+    },
+    /* Maximises money and spends anything that is not money — lies, hides,
+       skips the dinner. This is the profile that should find Hollow. */
+    'cynic': function (choice) {
+      if (has(choice, 'greed')) return 900;
+      return cashOf(choice) - ((choice.effects && choice.effects.self) || 0) * 5;
+    },
+    'honest': function (choice) {
+      if (choice.wager || has(choice, 'greed')) return NEVER;
+      return ((choice.effects && choice.effects.self) || 0) * 100
+        + ((choice.effects && choice.effects.standing) || 0) * 10;
+    },
+    /* Seeded, not Math.random, so a surprising row can be reproduced. */
+    'random': function (choice, state, rng) { return rng(); }
+  };
+
+  function has(choice, tag) {
+    return (choice.tags || []).indexOf(tag) !== -1;
+  }
+
+  function cashOf(choice) {
+    return (choice.effects && choice.effects.cash) || 0;
+  }
+
+  function run(seed, score) {
+    var state = global.State.create(seed);
+    var rng = global.Rng.create(seed);
+
+    /* Kept outside the run state because only the harness cares: the realised
+       edge has to be measured over honest rolls, excluding the scripted first
+       win in chapter one. */
+    state.honestWagered = 0;
+    state.honestReturned = 0;
+
+    while (true) {
+      global.Economy.openMonth(state);
+
+      var beat = global.Scenarios.beatFor(state.month);
+      if (!beat) { state.ended = global.Endings.resolve(state); break; }
+
+      var choices = global.Scenarios.visibleChoices(state, beat);
+      var best = choices[0];
+      var bestScore = -Infinity;
+
+      choices.forEach(function (choice) {
+        var value = score(choice, state, rng);
+        if (value > bestScore) { bestScore = value; best = choice; }
+      });
+
+      var result = global.Scenarios.choose(state, beat, best, rng);
+
+      if (result.wager && !result.wager.scripted) {
+        state.honestWagered += result.wager.stake;
+        state.honestReturned += result.wager.payout;
+      }
+
+      global.Scenarios.collectionRoll(state, rng);
+
+      /* Borrowing to cover a shortfall is the choice a player under pressure
+         actually makes, so the profiles make it too. */
+      global.Economy.closeMonth(state, global.Economy.willFallShort(state) ? 'borrow' : 'pay');
+
+      var ruin = global.Endings.checkRuin(state);
+      if (ruin) { state.ended = ruin; break; }
+
+      if (state.month >= global.GAME.totalMonths) {
+        state.ended = global.Endings.resolve(state);
+        break;
+      }
+    }
+
+    return state;
+  }
+
+  function simulate() {
+    var count = parseInt(document.getElementById('runs').value, 10) || 1000;
+    var out = document.getElementById('simulate-out');
+    out.textContent = 'Running…';
+
+    /* Yield once so the "Running…" actually paints before the loop blocks. */
+    setTimeout(function () {
+      var results = {};
+
+      Object.keys(STRATEGIES).forEach(function (name) {
+        var endings = {};
+        var wagered = 0, returned = 0, collections = 0, cleared = 0, never = 0, ashoreInDebt = 0;
+        var negativeCash = 0;
+        var i;
+
+        for (i = 0; i < count; i += 1) {
+          var state = run(i + 1, STRATEGIES[name]);
+          endings[state.ended] = (endings[state.ended] || 0) + 1;
+          wagered += state.honestWagered;
+          returned += state.honestReturned;
+          if (state.collections) collections += 1;
+          if (state.debt <= 0) cleared += 1;
+          if (global.Economy.projection(state) === null) never += 1;
+          if (state.ended === 'ashore' && state.debt > 0) ashoreInDebt += 1;
+          /* A run should never be able to spend money it does not have. This
+             counter exists because a version of closeMonth once could. */
+          if (state.cash < 0) negativeCash += 1;
+        }
+
+        results[name] = {
+          endings: endings,
+          realised: wagered ? returned / wagered : null,
+          collections: collections / count,
+          cleared: cleared / count,
+          never: never / count,
+          ashoreInDebt: ashoreInDebt / count,
+          negativeCash: negativeCash
+        };
+      });
+
+      renderSim(results, count);
+    }, 20);
+  }
+
+  function renderSim(results, count) {
+    var out = document.getElementById('simulate-out');
+    out.textContent = '';
+
+    var ids = global.Endings.GATES.map(function (g) { return g.id; });
+    var table = document.createElement('table');
+    var head = document.createElement('tr');
+
+    ['strategy'].concat(ids).concat(['cleared', 'no term', 'caught', 'honest per €1']).forEach(function (label) {
+      var th = document.createElement('th');
+      th.textContent = label;
+      head.appendChild(th);
+    });
+    table.appendChild(head);
+
+    Object.keys(results).forEach(function (name) {
+      var r = results[name];
+      var tr = document.createElement('tr');
+
+      function cell(text, cls) {
+        var td = document.createElement('td');
+        if (cls) td.className = cls;
+        td.textContent = text;
+        tr.appendChild(td);
+      }
+
+      cell(name);
+      ids.forEach(function (id) {
+        cell(r.endings[id] ? (100 * r.endings[id] / count).toFixed(1) + '%' : '·');
+      });
+      cell((100 * r.cleared).toFixed(1) + '%');
+      cell((100 * r.never).toFixed(1) + '%');
+      cell((100 * r.collections).toFixed(1) + '%');
+      cell(r.realised === null ? '·' : (100 * r.realised).toFixed(1) + 'c');
+      table.appendChild(tr);
+    });
+
+    out.appendChild(table);
+
+    /* The four claims, checked against the numbers above rather than against
+       what the prose says. */
+    var targets = document.createElement('div');
+    targets.style.marginTop = '1.25rem';
+
+    function verdict(label, pass, detail) {
+      var div = document.createElement('div');
+      div.className = pass ? 'ok' : 'fail';
+      div.textContent = (pass ? 'PASS  ' : 'FAIL  ') + label + ' — ' + detail;
+      targets.appendChild(div);
+    }
+
+    var grind = results['always-grind'];
+    var gamble = results['always-gamble'];
+    var greedy = results['always-greedy'];
+    var honest = results['honest'];
+
+    /* Message one is a claim about money, so it is checked against the money
+       rather than against which ending fires. A grinder who also tells the
+       truth *should* reach Ashore — that is message four working. What they
+       must not be able to do is clear the balance. */
+    verdict('debt is unpayable', grind.cleared === 0 && grind.never >= 0.9,
+      'grinding clears it in ' + (100 * grind.cleared).toFixed(1) + '% of runs (target 0%) '
+      + 'and ends with no term at all in ' + (100 * grind.never).toFixed(1) + '% (target ≥ 90%)');
+
+    var edge = gamble.realised;
+    verdict('gambling is honest about its odds', edge !== null && Math.abs(edge - global.GAME.wager.expectedReturn) < 0.05,
+      edge === null
+        ? 'no unscripted bets were placed — only the scripted chapter-one win exists so far'
+        : 'unscripted bets return ' + (100 * edge).toFixed(1) + 'c per euro (target '
+          + (100 * global.GAME.wager.expectedReturn).toFixed(0) + 'c)');
+
+    var whale = (gamble.endings.whale || 0) / count;
+    verdict('winning is real but rare', whale < 0.03,
+      'whale in ' + (100 * whale).toFixed(2) + '% of gambling runs (target < 3%, and > 0)');
+
+    verdict('greed gets caught', greedy.collections >= 0.85,
+      'a collection event in ' + (100 * greedy.collections).toFixed(1) + '% of greedy runs (target > 85%)');
+
+    verdict('you can be alright without being solvent', honest.ashoreInDebt > 0,
+      'ashore while still in debt in ' + (100 * honest.ashoreInDebt).toFixed(1) + '% of honest runs (target > 0%)');
+
+    var broke = Object.keys(results).reduce(function (total, name) {
+      return total + results[name].negativeCash;
+    }, 0);
+    verdict('nobody spends money they do not have', broke === 0,
+      broke + ' run(s) ended with negative cash (target 0)');
+
+    out.appendChild(targets);
+  }
+
+  document.getElementById('validate').addEventListener('click', validate);
+  document.getElementById('simulate').addEventListener('click', simulate);
+  validate();
+})(window);
+</script>
+
+</body>
+</html>

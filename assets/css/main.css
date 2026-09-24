@@ -1,0 +1,577 @@
+/* Underwater — all of it.
+
+   Every colour is a custom property declared twice: once on :root for dark,
+   once in the single [data-theme='light'] block. There are no hex values
+   anywhere else in this file, so a retheme is two blocks rather than a search.
+
+   --murk is the exception to "tokens are static". It is written by JavaScript
+   every month, from the player's debt and composure, and it drives the tint,
+   the pace of the transitions and the weight of the text. A player who keeps
+   their numbers under control never sees the bottom of its range. */
+
+:root {
+  --ink: #dfe7ea;
+  --ink-soft: #8ea0a8;
+  --ink-faint: #5d7278;
+  --bg: #0a1216;
+  --bg-deep: #060c0f;
+  --surface: #10202700;
+  --surface-solid: #112026;
+  --line: #1d333c;
+  --line-soft: #16282f;
+  --accent: #74b8ac;
+  --accent-ink: #06171a;
+  --bad: #cc7362;
+  --good: #86b177;
+
+  /* The opening picture. Night on the quay. */
+  --art-sky-top: #05101a;
+  --art-sky-bottom: #0e2029;
+  --art-water-top: #0a1d25;
+  --art-water-bottom: #03090d;
+  --art-far: #0c1c23;
+  --art-object: #040b0f;
+  --art-fold: #3d5861;
+  --art-line: #74b8ac;
+  --art-beam: #e8d5a2;
+
+  --murk: 0;
+  --pace: calc(220ms + var(--murk) * 420ms);
+
+  --radius: 10px;
+  --measure: 34rem;
+  --shell: 42rem;
+}
+
+[data-theme='light'] {
+  --ink: #17262c;
+  --ink-soft: #5a6e76;
+  --ink-faint: #8b9aa0;
+  --bg: #eceeec;
+  --bg-deep: #dfe3e1;
+  --surface: #ffffff00;
+  --surface-solid: #ffffff;
+  --line: #ccd5d4;
+  --line-soft: #dde3e2;
+  --accent: #2c6d64;
+  --accent-ink: #ffffff;
+  --bad: #a3462f;
+  --good: #3f6d34;
+
+  /* The same quay before dawn rather than after dark — the scene has to survive
+     a light background, so it goes to fog instead of inverting. */
+  --art-sky-top: #b9c6c8;
+  --art-sky-bottom: #dfe4e2;
+  --art-water-top: #a9b8b8;
+  --art-water-bottom: #7e9091;
+  --art-far: #9dadae;
+  --art-object: #4a5b5d;
+  --art-fold: #b9c6c6;
+  --art-line: #2c6d64;
+  --art-beam: #c9a23e;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 1rem/1.65 ui-serif, Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background var(--pace) linear, color var(--pace) linear;
+}
+
+/* The water. Sits over everything, ignores the pointer, and is invisible at
+   --murk: 0 — which is where a run starts. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+  opacity: calc(var(--murk) * 0.6);
+  background:
+    radial-gradient(120% 80% at 50% -10%, transparent 30%, var(--bg-deep) 100%),
+    linear-gradient(180deg, transparent 40%, var(--bg-deep) 100%);
+  transition: opacity 900ms linear;
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 0.6rem 1rem;
+  z-index: 100;
+}
+
+.skip:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Chrome                                                              */
+/* ------------------------------------------------------------------ */
+
+.site-header {
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.site-header__inner,
+.ledger,
+.stage,
+.site-footer p {
+  max-width: var(--shell);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.25rem;
+}
+
+.site-header__brand {
+  margin: 0;
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.site-header__tools {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.link-button,
+.icon-button {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--ink-faint);
+  font: inherit;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.78rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.link-button:hover,
+.icon-button:hover {
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.icon-button {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.site-footer {
+  margin-top: auto;
+  padding: 2.5rem 0 3rem;
+  color: var(--ink-faint);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.site-footer p {
+  margin: 0;
+  max-width: var(--measure);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
+/* The ledger                                                          */
+/* ------------------------------------------------------------------ */
+
+.ledger-bar {
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--bg-deep);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.ledger {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.4rem;
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.ledger__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.ledger__label {
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.ledger__value {
+  font-size: 0.86rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.ledger__item--debt .ledger__value {
+  font-weight: 600;
+}
+
+/* "Never" is the single most important word the interface can show, so it is
+   the only thing in the ledger that gets a colour. */
+.ledger__item--never .ledger__value {
+  color: var(--bad);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+  height: 1.3em;
+}
+
+.dots__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--line);
+}
+
+.dots__dot.is-filled {
+  background: var(--accent);
+}
+
+/* ------------------------------------------------------------------ */
+/* Cards                                                               */
+/* ------------------------------------------------------------------ */
+
+.stage {
+  width: 100%;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  outline: none;
+}
+
+.card {
+  max-width: var(--measure);
+  margin: 0 auto;
+  transition: opacity var(--pace) ease, transform var(--pace) ease;
+}
+
+.card.is-entering {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+/* ------------------------------------------------------------------ */
+/* The opening image                                                   */
+/* ------------------------------------------------------------------ */
+
+/* The intro card is wider than the others so the picture has room, but its
+   prose is pulled back to the reading measure and centred under the image —
+   text set to the full width of an illustration is a tiring line length. */
+.card--intro {
+  max-width: var(--shell);
+}
+
+.card--intro .card__body,
+.card--intro .card__actions {
+  max-width: var(--measure);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.art {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 2rem;
+  border-radius: var(--radius);
+  /* The picture is the one thing on screen that should not go murky — it is
+     the state of the world before any of this is your fault. */
+  border: 1px solid var(--line-soft);
+}
+
+.art text {
+  text-anchor: middle;
+}
+
+.art__title {
+  font-family: ui-serif, Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  font-size: 42px;
+  fill: var(--ink);
+  letter-spacing: 0.02em;
+}
+
+.art__lede {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 14px;
+  fill: var(--ink-soft);
+  letter-spacing: 0.04em;
+}
+
+/* The number is set larger than anything above the waterline on purpose, and
+   dimmed, so it reads as something underneath the scene rather than a label
+   on it. */
+.art__figure {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 104px;
+  font-weight: 600;
+  fill: var(--art-line);
+  fill-opacity: 0.5;
+  letter-spacing: 0.01em;
+}
+
+.art__sub {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+  fill: var(--art-line);
+  fill-opacity: 0.42;
+  letter-spacing: 0.06em;
+}
+
+/* The name he paid extra for, showing through where the rain pulled the cover
+   tight. */
+.art__vinyl {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  fill: var(--art-fold);
+  fill-opacity: 0.45;
+  letter-spacing: 0.34em;
+}
+
+@media (max-width: 34rem) {
+  .art__title { font-size: 50px; }
+  .art__lede { font-size: 17px; }
+  .art__sub { font-size: 20px; }
+}
+
+.card__kicker {
+  margin: 0 0 0.6rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.card__title {
+  margin: 0 0 1.1rem;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.prose {
+  margin: 0 0 1.05rem;
+  /* Text loses a little contrast as the run goes under, which is doing the
+     same work as the tint but on the part of the screen you are reading. */
+  color: color-mix(in srgb, var(--ink) calc(100% - var(--murk) * 18%), var(--ink-soft));
+}
+
+.card__note {
+  margin: 1.4rem 0 0;
+  padding-left: 0.9rem;
+  border-left: 2px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* Choices                                                             */
+/* ------------------------------------------------------------------ */
+
+.choices {
+  list-style: none;
+  margin: 1.8rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.choice {
+  display: flex;
+  gap: 0.85rem;
+  align-items: baseline;
+  width: 100%;
+  text-align: left;
+  background: var(--surface-solid);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 140ms ease, transform 140ms ease;
+}
+
+.choice:hover,
+.choice:focus-visible {
+  border-color: var(--accent);
+  transform: translateX(2px);
+  outline: none;
+}
+
+.choice__key {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+  min-width: 0.8rem;
+}
+
+.choice__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.choice__label {
+  line-height: 1.4;
+}
+
+.choice__hint {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.74rem;
+  color: var(--ink-faint);
+}
+
+.card__actions {
+  margin-top: 1.8rem;
+}
+
+.button {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.7rem 1.4rem;
+  font: inherit;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.button:hover { filter: brightness(1.08); }
+.button:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* ------------------------------------------------------------------ */
+/* The month-close strip — the drumbeat                                */
+/* ------------------------------------------------------------------ */
+
+.strip {
+  margin-top: 1.9rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 1.15rem;
+  align-items: baseline;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
+}
+
+.strip__month {
+  color: var(--ink-faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.65rem;
+}
+
+.strip__part { display: inline-flex; gap: 0.35rem; }
+.strip__label { color: var(--ink-faint); }
+.strip__value { font-variant-numeric: tabular-nums; }
+.strip--bad .strip__value { color: var(--bad); }
+
+/* ------------------------------------------------------------------ */
+/* Receipts and the final ledger                                       */
+/* ------------------------------------------------------------------ */
+
+.receipt {
+  margin: 1.5rem 0 0;
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  padding: 0.8rem 1rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.8rem;
+}
+
+.receipt--win { border-left-color: var(--good); }
+.receipt--loss { border-left-color: var(--bad); }
+
+.receipt__row,
+.final__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.2rem 0;
+}
+
+.receipt__label,
+.final__label { color: var(--ink-soft); }
+
+.receipt__value,
+.final__value { font-variant-numeric: tabular-nums; text-align: right; }
+
+.final {
+  margin-top: 2.2rem;
+  border-top: 1px solid var(--line);
+  padding-top: 0.5rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.82rem;
+}
+
+.final__heading {
+  margin: 1.5rem 0 0.4rem;
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.final__row--bad .final__value { color: var(--bad); }
+.final__row--good .final__value { color: var(--good); }
+.final__row--quiet { color: var(--ink-faint); margin-top: 1.5rem; }
+
+@media (min-width: 40rem) {
+  .card__title { font-size: 1.85rem; }
+  .stage { padding-top: 3.5rem; }
+}
+
+/* Honour a reader who has asked the system to stop moving things. The murk
+   still tints, because that is information rather than decoration — it just
+   stops animating into place. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
