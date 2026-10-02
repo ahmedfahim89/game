@@ -50,6 +50,8 @@
   function choose(state, beat, choice, rng) {
     var result = {
       outcome: choice.outcome,
+      image: choice.image || null,
+      imageAlt: choice.imageAlt || null,
       wager: null,
       greed: false,
       loan: false

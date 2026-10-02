@@ -191,9 +191,13 @@ body::after {
 }
 
 .site-footer p {
-  margin: 0;
+  margin: 0 auto;
   max-width: var(--measure);
   text-align: center;
+}
+
+.site-footer p + p {
+  margin-top: 0.75rem;
 }
 
 /* ------------------------------------------------------------------ */

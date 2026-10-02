@@ -3,7 +3,7 @@
 A short game about debt, chance, and what you are willing to know about yourself.
 
 You bought a refrigerated van to go independent. The round never quite worked, and now
-you owe Nesso fourteen thousand euros at four per cent a month. Thirty months, one
+you owe Luca "The Undertaker" fourteen thousand euros at four per cent a month. Thirty months, one
 decision each, six endings.
 
 ## Playing it
