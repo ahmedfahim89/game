@@ -4,11 +4,11 @@
    fetched as JSON on purpose: fetch() is blocked on file:// URLs, and the game
    has to play by double-clicking index.html with no server in the way.
 
-   House style for numbers: cardinal quantities, money, times and durations are
-   written as digits — "€14,000", "30 months", "81 minutes" — because this is a
-   game about arithmetic and the figures should read as figures. Ordinals ("the
-   fourth of the month", "a second van") and idioms ("once", "twice") stay as
-   words, where digits would read as a mistake.
+   House style for numbers: digits, for cardinals and ordinals alike — "€14,000",
+   "30 months", "81 minutes", "the 4th of the month", "a 2nd van" — because this
+   is a game about arithmetic and the figures should read as figures. Only words
+   that are not really figures stay as words: "once", "twice", "a single cent",
+   and "one" used as an article or pronoun ("one Saturday").
 
    Effect keys are checked against State.NUMERIC_KEYS by tools/checks.html. A
    typo here fails silently in the game and loudly in that tool, so run it after
@@ -119,8 +119,9 @@
         kind: 'situation',
         title: 'Teresa Is 50',
         body: [
-          'Your sister has booked the back room at the place on Rua da Prata, the one with the tiled walls, and 11 people have said yes. Halberd has put up a sheet for Saturday doubles — €260 for the weekend, cash the following Friday.',
-          'The sheet has 3 names on it and 4 slots.'
+          'Your sister has booked a birthday dinner at the restaurant. 11 friends and family have said yes.',
+          'That same weekend, your employer puts a sheet on the noticeboard at the office. Extra shifts on the weekend, Saturday and Sunday. €260 for the two days, paid in cash the Friday after.',
+          'There are 4 places on the sheet. 3 of them are already taken.'
         ],
         choices: [
           {
@@ -128,6 +129,8 @@
             label: 'Put your name on the sheet',
             hint: '+€260. Teresa will understand.',
             effects: { cash: 260, standing: -1, composure: -1 },
+            image: 'assets/image/chp2-1.jpg',
+            imageAlt: 'Your own hands holding a phone at 11:03 at night. On the screen Teresa has sent a photograph of the long table — everyone leaning in, glasses and plates between them — under a message reading "Next time!" Behind the phone your laptop is still open on a timesheet: Saturday 14hrs, Sunday 9hrs.',
             outcome: 'You do 14 hours on Saturday and 9 on Sunday. Teresa sends you a photograph of the table at 11 at night, everyone leaning in, a gap at the end where a chair was not needed. She has written *next time!* with an exclamation mark, which she does not normally use.'
           },
           {
@@ -136,15 +139,17 @@
             hint: 'Costs about €40.',
             effects: { cash: -40, standing: 1, self: 1 },
             weight: 1,
-            outcome: 'You are the one who ends up carrying the cake in, because you are the one standing nearest the door. Teresa cries a bit, and blames the candles. It costs you €40 and one Saturday and you cannot make the arithmetic say it was worth it, which does not stop it having been.'
+            image: 'assets/image/chp2-2.jpg',
+            imageAlt: 'Seen from behind the cake: your own hands carry it in from the doorway, 50 in lit candles on top, smoke curling up toward the chandeliers. Teresa is dabbing her eyes with a napkin and smiling at you, friends and family leaning in around her. Through the rain-streaked glass behind you, your van sits at the kerb in the dark.',
+            outcome: 'You are the one who ends up carrying the cake. Teresa cries a bit. It costs you €40 and 1 Saturday (€260 forgone). You cannot make the math say to yourself "it was worth it anyway. Anything to my beloved sister".'
           },
           {
             id: 'c1-birthday-hide',
-            label: 'Go, and tell everyone the round is picking up',
+            label: 'Go, and tell everyone the business is doing well',
             hint: 'Costs about €40.',
             effects: { cash: -40, standing: 1, self: -1 },
             weight: 2,
-            outcome: 'You are good at it. That is the part that stays with you afterwards — not that you lied, but how easily it came out, how the details arrived ready-made. 2 restaurants in Sintra. A second van in the spring. Your cousin asks for a card and you say you have run out.'
+            outcome: 'You are good at lying. The fluency. You did not have to invent anything. How easily it came out. How the details arrived ready-made. 2 new restaurant clients. To buy a 2nd van in the spring. Your cousin asks for a card and you say you have run out.'
           }
         ]
       },
@@ -164,7 +169,7 @@
           {
             id: 'c1-first-bet-in',
             label: 'Put something on it',
-            hint: 'Doubles if it comes in.',
+            hint: 'Doubles if it comes in, but you doubt it.',
             wager: { multiplier: 2, stake: 'suggested', base: 150, scripted: 'win' },
             effects: { composure: 1 },
             weight: 2,
