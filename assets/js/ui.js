@@ -126,6 +126,14 @@
 
     if (spec.art) card.appendChild(artwork(spec.art, spec.artLabel));
 
+    /* A plain relative src, so it still loads from file://. */
+    if (spec.image) {
+      var picture = el('img', 'art');
+      picture.src = spec.image;
+      picture.alt = spec.imageAlt || '';
+      card.appendChild(picture);
+    }
+
     if (spec.kicker) {
       var kicker = el('p', 'card__kicker');
       kicker.appendChild(document.createTextNode(spec.kicker));
@@ -330,7 +338,7 @@
     } catch (err) {
       /* Fall through to the default. */
     }
-    return 'dark';
+    return 'light';
   }
 
   function init() {

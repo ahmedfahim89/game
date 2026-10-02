@@ -101,6 +101,8 @@
     }
 
     global.Ui.renderCard({
+      image: result.image,
+      imageAlt: result.imageAlt,
       kicker: collection ? collection.title : null,
       body: body,
       extra: extra,
@@ -217,7 +219,7 @@
     heading('The balance');
     row('Months', String(data.months));
     row('Still owed', global.Economy.money(data.debt));
-    row('Interest paid to Nesso', global.Economy.money(data.interestPaid));
+    row('Interest paid to Luca "The Undertaker"', global.Economy.money(data.interestPaid));
     row('Rate reached', String(data.rate) + '% / month');
     row('Payments missed', String(data.missedPayments));
     row('New loans taken', String(data.loansTaken));

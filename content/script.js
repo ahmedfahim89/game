@@ -29,13 +29,17 @@
        and the label covers only what is lost by not seeing it. */
     intro: {
       art: 'intro-art',
-      alt: 'A refrigerated van under a tarpaulin on a quay at night, its business name showing faintly through the cover. Along from it a car waits with its headlights on. Below the waterline, the figure €14,000.',
+      alt: 'A refrigerated van in front of your building gathering dust on a quay at night, its business name showing faintly through the cover. Along from it a car waits with its headlights on. Below the waterline, the figure €14,000.',
       title: null,
       body: [
-        '€14,000 bought a refrigerated van and the idea that you would be your own man. Fish from the docks to the inland restaurants, your round, your hours, your name on the side in vinyl letters you paid extra for.',
-        'The round never quite worked. Not dramatically — nothing burned down, nobody cheated you. It just did not add up, month after month, until you stopped pretending it would.',
-        'So you drive for Halberd Logistics now, nights mostly, and the van sits under a tarpaulin behind your building. And on the fourth of every month Nesso parks outside the depot and waits for you with the engine running.',
-        '30 months. That is how long you have given yourself.'
+        '€14,000 bought you a refrigerated van. It was supposed to buy you freedom.',
+        'Your own routes. Your own hours. Your own name printed in vinyl along the side. Fish from the docks to the restaurants. No boss. No clock. No one telling you where to be.',
+        'You believed that part 💀',
+        'Nothing exploded. Nobody robbed you. There was no single disaster you could point to and say, There. That\'s where everything went wrong. The numbers simply refused to work. 📉',
+        'One bad month became three. Three became twelve. Every time you thought you were close, another payment came due. Another repair. Another bill.',
+        'Eventually, you stopped calling it your business. The van sits in front of your building gathering dust.',
+        'Every fourth of the month, Luca \'The Undertaker\' parks outside. He waits until you finish your shift, and you already know what happens next. 😨',
+        '30 months to survive under water. 30 months before you find out what happens when it doesn\'t. 💀'
       ],
       button: 'Begin'
     },
@@ -63,17 +67,26 @@
         kind: 'situation',
         title: 'The Fourth of the Month',
         body: [
-          'Nesso does not get out of the car. He never does. He lowers the window and holds up the notebook so you can see your own handwriting on the first page, from 18 months ago, when this seemed like a sensible way to raise money quickly.',
-          '"4 per cent," he says, the way a man says the weather. "On 14,000. You know what that is."',
+          'Luca "The Undertaker" does not get out of the car. He lowers the window and holds up the notebook so you can see your own handwriting on the first page, from 18 months ago.',
+          '"4%," he says, the way a man says the weather. "On 14,000. You know what that is."',
           'You do. It is €560 a month before a single cent of what you actually owe him moves at all.'
         ],
         choices: [
           {
             id: 'c1-arrangement-pay',
             label: 'Hand him what you have on you',
-            hint: 'Costs €300 now. He will remember it.',
-            effects: { cash: -300, composure: 1 },
+            hint: 'Costs €300, straight off the balance. He will remember it.',
+            /* The debt has to come down with the cash. This is the one choice in
+               the game where the player hands money directly to the lender
+               rather than spending it on something, and without the matching
+               `debt` the €300 simply evaporated: it left the pocket, never
+               reached the balance, and only reduced what was available for the
+               automatic payment at month end. Paying him was strictly worse than
+               refusing. */
+            effects: { cash: -300, debt: -300, composure: 1 },
             weight: 1,
+            image: 'assets/image/chp1-1.jpg',
+            imageAlt: 'Seen from inside his car in the rain, you reach in through the window, wide-eyed, toward a gloved hand holding a fan of euro notes. A cigar glows in the dark of the back seat, smoke curling, a baseball bat leaning against the dashboard.',
             outcome: 'He counts it twice, writes a number in the notebook, and nods once. It is not gratitude. But the window goes up slowly rather than fast, and you find you are grateful for the difference.'
           },
           {
@@ -81,6 +94,8 @@
             label: 'Tell him it will come at the end of the month',
             hint: 'Costs nothing today.',
             effects: { composure: -1 },
+            image: 'assets/image/chp1-2.jpg',
+            imageAlt: 'A rain-soaked car park at night. You stand under a streetlamp, wide-eyed, looking from a scrap of paper reading 14,000 euros to a phone showing your total debt. Behind you, his black car idles with its taillights lit.',
             outcome: '"It will," he agrees, and that is worse than an argument. He writes something anyway. You stand in the car park for a while after he has gone, doing sums that you already know the answer to.'
           },
           {
@@ -90,6 +105,8 @@
             requires: { composure: { min: 6 } },
             effects: { composure: -1, self: 1 },
             weight: 1,
+            image: 'assets/image/chp1-3.jpeg',
+            imageAlt: 'In the rain-soaked car park, Luca stands over you in a long dark coat, one hand raised, speaking. You look up at him, hat gripped in your hands. His black car idles behind.',
             outcome: 'He looks at you properly for the first time in a year. "You are the fourth person to ask me that this month," he says. "I say the same thing to all of you. The rate is not the problem. The rate is just the part you can see."'
           }
         ]
@@ -183,7 +200,7 @@
             effects: { self: 2, standing: 1, composure: 1 },
             flags: ['disclosed'],
             weight: 3,
-            outcome: 'You say 14,000 and then, because saying it once did not kill you, you say 4 per cent a month as well, and who it is owed to.\n\nShe does not gasp and she does not offer you money, which are the 2 things you had braced for. She sits down on the step and says, "Okay." Then, after a while: "Okay. That is a real thing. I hate it, but it is a real thing, and I would rather know a real thing."\n\nSomething goes out of your shoulders that you did not know was being held there.'
+            outcome: 'You say 14,000 and then, because saying it once did not kill you, you say 4% a month as well, and who it is owed to.\n\nShe does not gasp and she does not offer you money, which are the 2 things you had braced for. She sits down on the step and says, "Okay." Then, after a while: "Okay. That is a real thing. I hate it, but it is a real thing, and I would rather know a real thing."\n\nSomething goes out of your shoulders that you did not know was being held there.'
           },
           {
             id: 'c1-sister-deflect',
@@ -221,8 +238,8 @@
             outcome: 'It takes most of what you have and it hurts in a clean way, the way a thing hurts when you are quite sure it was correct. Abel does it in a day and charges you what he said he would.'
           },
           {
-            id: 'c1-compressor-nesso',
-            label: 'Let Nesso cover it',
+            id: 'c1-compressor-luca',
+            label: 'Let Luca "The Undertaker" cover it',
             hint: '+€900 onto the balance. He will adjust the rate.',
             tags: ['loan'],
             effects: { debt: 900, composure: -1 },

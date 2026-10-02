@@ -37,7 +37,7 @@
     totalMonths: 30,
 
     payment: {
-      /* Cash held back each month for food and fuel; the rest goes to Nesso. */
+      /* Cash held back each month for food and fuel; the rest goes to Luca "The Undertaker". */
       buffer: 200,
       /* The token slice of principal the lender adds on top of the interest to
          make the minimum look like progress. */
