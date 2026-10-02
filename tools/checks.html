@@ -107,6 +107,78 @@
     });
   }
 
+  /* Regression guard for the reload bug.
+
+     The save is written at the END of a month, so resuming must land on the
+     START of the next one with that month's wages paid. An earlier boot()
+     rewound the counter before resuming and replayed the month the player had
+     just finished — effects applied twice, the wages never arrived, and a
+     choice costing more than the remaining cash still took its full value off
+     the balance. None of that is visible to the simulator, because a headless
+     run never reloads.
+
+     This test writes to the real save key, so the player's run is backed up and
+     restored around it. */
+  function checkSaveResume() {
+    var key = global.GAME.storageKey;
+    var backup = null;
+
+    try {
+      backup = localStorage.getItem(key);
+    } catch (err) {
+      warn('save/resume', 'localStorage is unavailable, so this check did not run');
+      return;
+    }
+
+    try {
+      var s = global.State.create(99);
+      var beat = global.Scenarios.beatFor(1);
+
+      global.Economy.openMonth(s);
+      global.Scenarios.choose(s, beat, beat.choices[0], global.Rng.create(99));
+      global.Economy.closeMonth(s, 'pay');
+
+      var monthClosed = s.month;
+      var debtAtSave = s.debt;
+      var cashAtSave = s.cash;
+
+      global.State.save(s);
+      var reloaded = global.State.load();
+
+      if (!reloaded) {
+        fail('save/resume', 'State.load returned nothing after a save');
+        return;
+      }
+
+      if (reloaded.month !== monthClosed) {
+        fail('save/resume', 'the save recorded month ' + reloaded.month + ', expected the month that closed (' + monthClosed + ')');
+      }
+
+      /* Exactly what boot() does: hand the save straight to the loop, which
+         opens the next month. Nothing may be rewound first. */
+      global.Economy.openMonth(reloaded);
+
+      if (reloaded.month !== monthClosed + 1) {
+        fail('save/resume', 'resuming landed on month ' + reloaded.month + ' but should start month ' + (monthClosed + 1) + ' — the reload bug is back');
+      }
+
+      if (reloaded.debt !== debtAtSave) {
+        fail('save/resume', 'resuming moved the balance from ' + debtAtSave + ' to ' + reloaded.debt + ' without a month being played');
+      }
+
+      var expectedCash = cashAtSave + global.Economy.surplus(reloaded);
+      if (reloaded.cash !== expectedCash) {
+        fail('save/resume', 'resumed holding ' + reloaded.cash + ', expected ' + expectedCash + ' (the cash at save plus one month of wages)');
+      }
+    } finally {
+      try {
+        if (backup === null) localStorage.removeItem(key); else localStorage.setItem(key, backup);
+      } catch (err) {
+        /* Storage went away mid-test; nothing useful to do about it here. */
+      }
+    }
+  }
+
   function validate() {
     problems = [];
     notes = [];
@@ -191,6 +263,7 @@
       });
     });
 
+    checkSaveResume();
     render();
   }
 
