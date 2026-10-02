@@ -36,9 +36,9 @@
         'Your own routes. Your own hours. Your own name printed in vinyl along the side. Fish from the docks to the restaurants. No boss. No clock. No one telling you where to be.',
         'You believed that part 💀',
         'Nothing exploded. Nobody robbed you. There was no single disaster you could point to and say, There. That\'s where everything went wrong. The numbers simply refused to work. 📉',
-        'One bad month became three. Three became twelve. Every time you thought you were close, another payment came due. Another repair. Another bill.',
+        'One bad month became 3. 3 became 12. Every time you thought you were close, another payment came due. Another repair. Another bill.',
         'Eventually, you stopped calling it your business. The van sits in front of your building gathering dust.',
-        'Every fourth of the month, Luca \'The Undertaker\' parks outside. He waits until you finish your shift, and you already know what happens next. 😨',
+        'Every 4th of the month, Luca \'The Undertaker\' parks outside. He waits until you finish your shift, and you already know what happens next. 😨',
         '30 months to survive under water. 30 months before you find out what happens when it doesn\'t. 💀'
       ],
       button: 'Begin'
@@ -65,9 +65,9 @@
         chapter: 'ch1',
         month: 1,
         kind: 'situation',
-        title: 'The Fourth of the Month',
+        title: 'The 4th of the Month',
         body: [
-          'Luca "The Undertaker" does not get out of the car. He lowers the window and holds up the notebook so you can see your own handwriting on the first page, from 18 months ago.',
+          'Luca "The Undertaker" does not get out of the car. He lowers the window and holds up the notebook so you can see your own handwriting on the 1st page, from 18 months ago.',
           '"4%," he says, the way a man says the weather. "On 14,000. You know what that is."',
           'You do. It is €560 a month before a single cent of what you actually owe him moves at all.'
         ],
@@ -107,7 +107,7 @@
             weight: 1,
             image: 'assets/image/chp1-3.jpeg',
             imageAlt: 'In the rain-soaked car park, Luca stands over you in a long dark coat, one hand raised, speaking. You look up at him, hat gripped in your hands. His black car idles behind.',
-            outcome: 'He looks at you properly for the first time in a year. "You are the fourth person to ask me that this month," he says. "I say the same thing to all of you. The rate is not the problem. The rate is just the part you can see."'
+            outcome: 'He looks at you properly for the 1st time in a year. "You are the 4th person to ask me that this month," he says. "I say the same thing to all of you. The rate is not the problem. The rate is just the part you can see."'
           }
         ]
       },
@@ -120,7 +120,7 @@
         title: 'Teresa Is 50',
         body: [
           'Your sister has booked a birthday dinner at the restaurant. 11 friends and family have said yes.',
-          'That same weekend, your employer puts a sheet on the noticeboard at the office. Extra shifts on the weekend, Saturday and Sunday. €260 for the two days, paid in cash the Friday after.',
+          'That same weekend, your employer puts a sheet on the noticeboard at the office. Extra shifts on the weekend, Saturday and Sunday. €260 for the 2 days, paid in cash the Friday after.',
           'There are 4 places on the sheet. 3 of them are already taken.'
         ],
         choices: [
@@ -252,7 +252,7 @@
             tags: ['loan'],
             effects: { debt: 900, composure: -1 },
             weight: 3,
-            outcome: '"Of course," he says, and that is all. The money is with Abel by lunchtime and the van is running by Thursday, and you notice how easy it was, how completely frictionless, and you understand for the first time that the ease is the product. He is not selling you €900. He is selling you not having to feel this today.'
+            outcome: '"Of course," he says, and that is all. The money is with Abel by lunchtime and the van is running by Thursday, and you notice how easy it was, how completely frictionless, and you understand for the 1st time that the ease is the product. He is not selling you €900. He is selling you not having to feel this today.'
           },
           {
             id: 'c1-compressor-run',
@@ -284,7 +284,7 @@
             effects: { cash: 400, exposure: 20, self: -1 },
             tags: ['greed'],
             weight: 2,
-            outcome: '€400 in the first month, sold on to 2 places that do not ask questions. It is the easiest money you have ever handled and it slides straight into the hole without touching the sides.\n\nVitor is right, is the thing. It does not exist. You check the argument for holes several times over the following weeks and you cannot find one, and you keep checking, which ought to tell you something.'
+            outcome: '€400 in the 1st month, sold on to 2 places that do not ask questions. It is the easiest money you have ever handled and it slides straight into the hole without touching the sides.\n\nVitor is right, is the thing. It does not exist. You check the argument for holes several times over the following weeks and you cannot find one, and you keep checking, which ought to tell you something.'
           },
           {
             id: 'c1-writeoffs-decline',
@@ -316,14 +316,14 @@
       crisis: {
         title: 'Short',
         body: [
-          'The minimum is due on the fourth and the money is not there. It is not nearly there. You count it twice on the kitchen table, in coins at the end, which is how you know how this month has gone.'
+          'The minimum is due on the 4th and the money is not there. It is not nearly there. You count it twice on the kitchen table, in coins at the end, which is how you know how this month has gone.'
         ],
         choices: [
           {
             id: 'crisis-miss',
             label: 'Let it go past',
             hint: 'He adds 2 points to the rate. Permanently.',
-            outcome: 'No phone call. No visit. On the fifth a photograph arrives of a page of the notebook with a new figure on it, and the new figure is the old figure with 2 more points of interest running underneath it for the rest of the arrangement.\n\nThat is the whole punishment. He does not need to do anything else.'
+            outcome: 'No phone call. No visit. On the 5th a photograph arrives of a page of the notebook with a new figure on it, and the new figure is the old figure with 2 more points of interest running underneath it for the rest of the arrangement.\n\nThat is the whole punishment. He does not need to do anything else.'
           },
           {
             id: 'crisis-borrow',
@@ -355,7 +355,7 @@
           {
             id: 'coll-serious-fine',
             title: 'Environmental Health',
-            body: 'The letter uses the phrase *cold chain integrity* 4 times. The fine is €1,100 and there is a second paragraph, about what happens if there is a second letter.',
+            body: 'The letter uses the phrase *cold chain integrity* 4 times. The fine is €1,100 and there is a 2nd paragraph, about what happens if there is a 2nd letter.',
             effects: { cash: -1100, composure: -2 }
           },
           {
@@ -400,7 +400,7 @@
     endings: [
       {
         id: 'interlude',
-        title: 'End of Chapter One',
+        title: 'End of Chapter 1',
         body: [
           '6 months gone. 24 to go — and this is where the build currently stops.',
           'Everything under this line is the real state of your run. The numbers are not decoration; they are what the remaining chapters will be played against.'
