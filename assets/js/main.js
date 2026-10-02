@@ -273,10 +273,17 @@
 
     if (saved && !saved.ended && saved.month > 0) {
       global.Ui.showLedgerBar(true);
-      /* openMonth runs again on resume, so step back to the month the save was
-         taken in rather than skipping one. */
-      saved.month -= 1;
-      saved.cash -= global.Economy.surplus(saved);
+      /* The save is written at the END of a month, in closeMonth, so a resumed
+         run belongs at the start of the NEXT one — which is exactly what
+         nextMonth does unaided.
+
+         An earlier version rewound the counter here before resuming, on the
+         theory that openMonth would otherwise skip a month. It does not, and
+         the rewind replayed the month the player had just finished: its effects
+         applied a second time, the wages never arrived so cash came back at the
+         buffer instead of the buffer plus the surplus, and a choice costing more
+         than that could still take its full value off the balance because
+         State.apply floors cash at zero. Do not reintroduce it. */
       resume(saved);
       return;
     }
