@@ -173,16 +173,20 @@
             wager: { multiplier: 2, stake: 'suggested', base: 150, scripted: 'win' },
             effects: { composure: 1 },
             weight: 2,
-            outcomeWin: 'It comes in at 81 minutes. Marek shouts so loudly in the cab that you swerve. The money is in the account before you have finished the run — not in 3 days, not on Friday, now — and you sit in the depot car park at 6 in the morning looking at a number that took you 90 seconds to earn instead of 9 hours.\n\nYou think: that was luck. You think it clearly and honestly, and then you put the phone in your pocket, and some part of you files the thought away where it will not be in the way later.',
+            outcomeWin: 'It comes in at 87 minutes. Marek shouts so loudly that you nearly drive off the road. The money is in the account before you have finished the shift, not in 3 days, now. You sit in the depot car park at 6 a.m. looking at a number that took you 90 seconds to earn instead of 9 hours.\n\nYou think: that was luck. You think it clearly and honestly, and then you put the phone in your pocket, and part of you moves the thought somewhere it will not stop you next time.',
             outcomeLose: 'Nothing. The match ends and the number goes grey.'
           },
           {
             id: 'c1-first-bet-out',
             label: 'Tell him you are not doing that',
             hint: 'Nothing happens.',
-            effects: { self: 1 },
+            /* Refusing costs nerve, which is the point: the regret in the
+               outcome is real, and a rattled player is offered a larger stake
+               the next time one is going. Doing the right thing here genuinely
+               does make the next bet harder to refuse. */
+            effects: { self: 1, composure: -1 },
             weight: 2,
-            outcome: 'Marek shrugs and goes back to his phone. At 6 in the morning he shows you the score with the reverence of a man showing you his newborn, and you say well done, and you mean it, and you drive home. Nothing happened. It is remarkable how much nothing that is.'
+            outcome: 'Marek goes back to his phone. At 6 a.m. he shows you the score with the reverence of a man showing you his newborn, and you say well done, and you mean it, and you drive home. Nothing happened. It is remarkable how much nothing that is.\n\nOn the drive home you work out what you would have won. You already know the number. You work it out again anyway, and again at the lights, and it is still there when you are trying to sleep.'
           }
         ]
       },
@@ -194,10 +198,9 @@
         kind: 'question',
         title: 'She Asks You Directly',
         body: [
-          'Teresa has come round with half a tray of something and she is looking at the tarpaulin in the yard, the shape of the van under it, the vinyl letters showing through where the rain has pulled the cover tight.',
+          'Teresa comes by with a tray of food. She is looking at the van in the yard, under its cover. The rain has pulled the cover tight, and your name shows through it.',
           '"I am going to ask you once," she says, "and then I will leave it. How bad is it?"'
         ],
-        note: 'There is no money in this one either way.',
         choices: [
           {
             id: 'c1-sister-truth',
