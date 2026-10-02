@@ -10,7 +10,11 @@ you later, and you can be alright without being solvent.
 
 ## Before you propose anything
 
-Read `CLAUDE.md` and `README.md` first, then skim `assets/js/config.js`, `content/script.js`,
+Read `CLAUDE.md` in full on every run, because it changes as the project does; never rely
+on what you remember of it. Pay particular attention to the section "The sweep — read this
+before reporting it as a bug": the month-end sweep is intended design, so do not report it
+as a bug. Report concrete traces (starting cash, starting debt, the choice, expected versus
+actual end state) rather than general suspicions. Then read `README.md`, then skim `assets/js/config.js`, `content/script.js`,
 `assets/js/lib/` and `assets/js/ui.js`. Ground every idea in what the code and prose
 actually do. Quote the file and line you are reacting to.
 

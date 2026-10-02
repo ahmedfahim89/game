@@ -118,6 +118,44 @@ Change any of these and the game stops making its argument. They are not style c
 between the two halves deliberately: what a scenario hands you is still in your pocket
 while you decide and gone by the time the month ends.
 
+### The sweep — read this before reporting it as a bug
+
+The payment in `Economy.closeMonth` is one line:
+
+```js
+var payment = Math.min(state.cash, state.debt, Math.max(affordable(state), accrued));
+```
+
+`affordable` is `cash − buffer`, and the buffer is €200. So **at the end of every month the
+lender takes everything the player is holding above €200.** It is automatic, the player
+never chooses the amount, and there is no way to save. This is the single most
+counter-intuitive rule in the game and it is deliberate. It is not a rounding error, a
+double-charge or a missing input.
+
+Three consequences follow, and all three are intended:
+
+- **Cash is not a resource you keep.** Nearly every month ends on exactly €200 regardless
+  of what happened during it. The €200 is a floor you return to, not savings.
+- **Money gained in a beat is debt reduction, not income**, and **money spent in a beat is
+  debt, not cash.** Pay €900 for the compressor and you still end on €200, exactly like
+  someone who paid nothing — the whole difference lands in the balance. This is the
+  mechanical form of the game's first claim.
+- **The buffer is not sacred.** The `Math.max` means that when `cash − 200` is less than
+  the interest, the payment digs *below* €200 to service the debt — correct behaviour, and
+  it can leave the player on single-digit cash. Only when cash cannot cover the interest at
+  all does `willFallShort` fire and raise the crisis card.
+
+A month where the player pays the interest exactly and the balance ends where it started
+is also correct, and is the clearest statement the game makes.
+
+**The one place the sweep genuinely does hide a bug:** a choice whose fiction is *handing
+money to the lender* must carry a matching negative `debt` alongside its negative `cash`.
+Without it the money leaves the pocket, never reaches the balance, and the sweep hides the
+loss — both branches end on €200 and only the debt column differs, so paying him comes out
+*worse* than refusing. That was real in `c1-arrangement-pay` and is fixed. Every other cash
+cost in the game is an expense (Abel, the dinner), where touching cash and not debt is
+correct. When auditing a new beat, ask which of the two it is.
+
 ## Conventions
 
 **JavaScript** — ES5-flavoured: `var`, function expressions, no `let`/`const`/arrow
@@ -155,9 +193,14 @@ wager?, weight?, outcome | outcomeWin + outcomeLose }`.
 - `weight` marks a pivotal choice for the "months that decided it" list; scenery gets none.
 - Blank lines inside an outcome string become separate paragraphs.
 
-**Numbers in prose are digits.** Cardinal quantities, money, times and durations are
-written as figures — `€14,000`, `30 months`, `81 minutes`, `4 a.m.` — because this is a
-game about arithmetic and the numbers should read as numbers rather than dissolve into
-the sentence. Ordinals (*the fourth of the month*, *a second van*) and idioms (*once*,
-*twice*) stay as words, where a digit would read as a mistake. Keep this consistent when
-writing new beats.
+**Numbers in prose are digits — cardinals and ordinals alike.** Quantities, money, times
+and durations are figures (`€14,000`, `30 months`, `81 minutes`, `4 a.m.`), and so are
+ordinals (`the 4th of the month`, `a 2nd van`, `the 1st page`). This is a game about
+arithmetic, and the numbers should read as numbers rather than dissolve into the
+sentence.
+
+Only words that are not really figures stay as words: *once*, *twice*, *a single cent*,
+*half a tray*. "One" used as an article or a pronoun is also a word, not a number — *he
+holds one out to you*, *one Saturday*, *the one with the tiled walls*.
+
+Keep this consistent when writing new beats.
