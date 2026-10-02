@@ -270,8 +270,18 @@
     });
 
     var saved = global.State.load();
+    var mode = global.State.resumeMode(saved);
 
-    if (saved && !saved.ended && saved.month > 0) {
+    /* A finished run comes back to its ending rather than to the intro. The
+       ledger is the point of the whole thing, and a refresh used to discard it
+       while the save still held the result. */
+    if (mode === 'ending') {
+      state = saved;
+      showEnding(saved.ended);
+      return;
+    }
+
+    if (mode === 'resume') {
       global.Ui.showLedgerBar(true);
       /* The save is written at the END of a month, in closeMonth, so a resumed
          run belongs at the start of the NEXT one — which is exactly what

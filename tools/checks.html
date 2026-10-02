@@ -107,6 +107,25 @@
     });
   }
 
+  /* Guards for the two reload paths that used to dump the player at the intro:
+     a run interrupted during month 1, which begin() has saved at month 0, and a
+     finished run whose ending screen and ledger are the point of the whole
+     game. State.resumeMode exists so this can be checked without loading
+     main.js and starting a game inside the tools page. */
+  function checkResumeMode() {
+    [
+      { name: 'no save at all', saved: null, want: 'intro' },
+      { name: 'a save with no month on it', saved: {}, want: 'intro' },
+      { name: 'a run interrupted during month 1 (saved at month 0)', saved: { month: 0 }, want: 'resume' },
+      { name: 'a run interrupted part-way through', saved: { month: 7 }, want: 'resume' },
+      { name: 'a finished run', saved: { month: 30, ended: 'ashore' }, want: 'ending' },
+      { name: 'a run that ended early', saved: { month: 11, ended: 'drowned' }, want: 'ending' }
+    ].forEach(function (c) {
+      var got = global.State.resumeMode(c.saved);
+      if (got !== c.want) fail('resume mode', c.name + ' should give "' + c.want + '", got "' + got + '"');
+    });
+  }
+
   /* Regression guard for the reload bug.
 
      The save is written at the END of a month, so resuming must land on the
@@ -263,6 +282,7 @@
       });
     });
 
+    checkResumeMode();
     checkSaveResume();
     render();
   }

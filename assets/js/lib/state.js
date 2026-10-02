@@ -150,6 +150,25 @@
     }
   }
 
+  /* What a saved run should do when the page loads.
+
+     This lives here rather than inline in boot() so tools/checks.html can test
+     it without loading main.js and starting a game inside the tools page.
+
+     'ending' matters: a finished run keeps its save, and the ending screen with
+     its ledger is the one thing the whole game exists to deliver. Dropping a
+     player back at the intro after 30 months throws it away while the data is
+     still sitting in storage.
+
+     'resume' covers month 0 deliberately. begin() saves before the first month
+     opens, so a run interrupted during month 1 has month 0 on disk; treating
+     that as nothing to resume restarted the run with a fresh seed. */
+  function resumeMode(saved) {
+    if (!saved || typeof saved.month !== 'number' || saved.month < 0) return 'intro';
+    if (saved.ended) return 'ending';
+    return 'resume';
+  }
+
   function clear() {
     try {
       localStorage.removeItem(global.GAME.storageKey);
@@ -169,6 +188,7 @@
     murk: murk,
     save: save,
     load: load,
+    resumeMode: resumeMode,
     clear: clear
   };
 })(window);
