@@ -193,6 +193,34 @@ wager?, weight?, outcome | outcomeWin + outcomeLose }`.
 - `weight` marks a pivotal choice for the "months that decided it" list; scenery gets none.
 - Blank lines inside an outcome string become separate paragraphs.
 
+### Disclosure is not one-shot
+
+`disclosed` is required for `ashore` and is set only by telling someone the truth about the
+debt. Month 4 (`c1-sister-truth`) is the first and cheapest chance, and most players will
+miss it — by then the game has spent three months teaching them to read every choice for
+its cash consequence, and that beat has none.
+
+**It must not be the only chance.** A single missed moment in month 4 locking the best
+ending for the remaining 26 months argues something bleaker than this game sets out to
+argue. The claim is that you can be alright without being solvent, and that is more
+persuasive if the door stays open.
+
+So chapters 3 and 5 each carry one more disclosure beat, and each is narrower than the one
+before it:
+
+| Where | What it costs | What it gives |
+| --- | --- | --- |
+| Month 4 | nothing | `self +2`, `standing +1`, `composure +1` |
+| Chapter 3 (~month 15) | admitting you lied in month 4 too; needs `composure` 4+ | `self +2`, `composure +1` |
+| Chapter 5 (~month 26) | saying it to someone who had already worked it out | `self +1` |
+
+Every later disclosure beat carries `hiddenWhen: { disclosed: true }`, so it never appears
+to a player who already told the truth. The offer exists only for someone still carrying it.
+
+**A late disclosure must not cost `standing`.** `ashore` needs `standing` 5+ as well, and a
+penalty there would close the same door the beat exists to open. Make it cost nerve, or
+pride, or the admission itself — never the people.
+
 **Numbers in prose are digits — cardinals and ordinals alike.** Quantities, money, times
 and durations are figures (`€14,000`, `30 months`, `81 minutes`, `4 a.m.`), and so are
 ordinals (`the 4th of the month`, `a 2nd van`, `the 1st page`). This is a game about
