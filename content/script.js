@@ -149,6 +149,8 @@
             hint: 'Costs about €40.',
             effects: { cash: -40, standing: 1, self: -1 },
             weight: 2,
+            image: 'assets/image/chp2-3.jpg',
+            imageAlt: 'The birthday table under strings of lights, Teresa at its head in a paper party hat behind a cake iced "Happy Birthday Teresa". Beside her you lean in with a glass of red, grinning, mid-sentence: "Buy a 2nd van." "2 new clients." Across the room a cousin raises a glass and calls back, "This business is really taking off!" Everyone around the table is laughing and applauding.',
             outcome: 'You are good at lying. The fluency. You did not have to invent anything. How easily it came out. How the details arrived ready-made. 2 new restaurant clients. To buy a 2nd van in the spring. Your cousin asks for a card and you say you have run out.'
           }
         ]
@@ -161,7 +163,7 @@
         kind: 'opportunity',
         title: 'Marek Has a Feeling',
         body: [
-          'Marek loads the 4 a.m. run with his phone wedged in the pallet rack, and tonight he wants you to look at it. 2 teams you have vaguely heard of. The number beside them is large and green.',
+          'Marek, your work buddy, loads the 4 a.m. run with his phone wedged in the pallet rack, and tonight he wants you to look at it. 2 teams you have vaguely heard of. The number beside them is large and green.',
           '"Double your money," he says. "I am not saying it is free. I am saying I have a feeling."',
           'The app takes about 40 seconds to sign up for. You know this because you watch him do it for you.'
         ],
@@ -173,6 +175,8 @@
             wager: { multiplier: 2, stake: 'suggested', base: 150, scripted: 'win' },
             effects: { composure: 1 },
             weight: 2,
+            image: 'assets/image/chp3-1.jpg',
+            imageAlt: 'Dawn over the depot car park, the sky going orange behind rows of refrigerated vans. In your work overalls you half-fall out of the open driver\'s door, holding your phone up with a green win glowing on the screen, mouth open somewhere between shock and a laugh. Beside you Marek leaps with both arms in the air, shouting, one hand on your shoulder.',
             outcomeWin: 'It comes in at 87 minutes. Marek shouts so loudly that you nearly drive off the road. The money is in the account before you have finished the shift, not in 3 days, now. You sit in the depot car park at 6 a.m. looking at a number that took you 90 seconds to earn instead of 9 hours.\n\nYou think: that was luck. You think it clearly and honestly, and then you put the phone in your pocket, and part of you moves the thought somewhere it will not stop you next time.',
             outcomeLose: 'Nothing. The match ends and the number goes grey.'
           },
@@ -186,6 +190,8 @@
                does make the next bet harder to refuse. */
             effects: { self: 1, composure: -1 },
             weight: 2,
+            image: 'assets/image/chp3-2.jpg',
+            imageAlt: 'Behind the wheel of the van in the depot car park at dawn, the dashboard clock reading 6:15 a.m. You rub your temple and stare at nothing. In both mirrors Marek is celebrating with his arms in the air. Above your head a thought bubble: the phone, an arrow, and the winnings you did not take, in large green figures with a tick beside them.',
             outcome: 'Marek goes back to his phone. At 6 a.m. he shows you the score with the reverence of a man showing you his newborn, and you say well done, and you mean it, and you drive home. Nothing happened. It is remarkable how much nothing that is.\n\nOn the drive home you work out what you would have won. You already know the number. You work it out again anyway, and again at the lights, and it is still there when you are trying to sleep.'
           }
         ]
