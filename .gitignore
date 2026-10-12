@@ -7,3 +7,6 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# Output of tools/build.ps1
+dist/
